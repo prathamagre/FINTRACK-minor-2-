@@ -1,0 +1,16 @@
+
+.expenses-chart {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    background: #f0f4ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .no-data-text {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin: 20px 0;
+  }
+  

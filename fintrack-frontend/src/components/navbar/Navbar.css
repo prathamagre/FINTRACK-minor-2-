@@ -1,0 +1,36 @@
+/* src/components/Navbar.css */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #6565fc;
+    padding: 15px 30px;
+    color: white;
+    border-bottom: 4px solid #4343ff;
+  }
+  
+  .navbar-logo {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-links li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding-bottom: 4px;
+  }
+  
+  .navbar-links li.active a {
+    border-bottom: 2px solid white;
+  }
+  

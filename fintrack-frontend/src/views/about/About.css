@@ -1,0 +1,16 @@
+
+.about-container {
+    padding: 40px;
+    text-align: center;
+  }
+  
+  .about-container h1 {
+    color: #4b0082;
+  }
+  
+  .about-container p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #555;
+  }
+  
