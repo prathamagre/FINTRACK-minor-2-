@@ -8,7 +8,7 @@ const PredictExpense = () => {
 
   const fetchPrediction = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/predict');
+      const response = await axios.get('https://pragee6946.pythonanywhere.com/api/predict');
       setPredictedExpense(response.data.predicted_expense);
     } catch (error) {
       console.error('Error fetching prediction:', error);

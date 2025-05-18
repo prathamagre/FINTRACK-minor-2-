@@ -9,7 +9,7 @@ const ExpenseList = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/expenses?month=${month}`);
+      const response = await axios.get(`https://pragee6946.pythonanywhere.com/api/expenses?month=${month}`);
       setExpenses(response.data);
     } catch (error) {
       console.error("Error fetching expenses:", error);
@@ -18,7 +18,7 @@ const ExpenseList = () => {
 
   const handleClearExpenses = async () => {
     try {
-      await axios.post('http://localhost:5000/api/clear-expenses');
+      await axios.post('https://pragee6946.pythonanywhere.com/api/clear-expenses');
       setExpenses([]);
       alert("All expenses cleared!");
     } catch (error) {

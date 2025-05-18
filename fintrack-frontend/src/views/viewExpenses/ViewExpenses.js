@@ -14,7 +14,7 @@ const ViewExpenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/expenses");
+      const res = await axios.get("https://pragee6946.pythonanywhere.com/api/expenses");
       setExpenses(res.data);
     } catch (err) {
       console.error("Failed to fetch expenses", err);

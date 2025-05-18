@@ -11,7 +11,7 @@ const SavingsAdvice = () => {
     if (!income) return;
 
     try {
-      const response = await axios.post("http://localhost:5000/api/savings-advice", {
+      const response = await axios.post("https://pragee6946.pythonanywhere.com/api/savings-advice", {
         income: parseFloat(income),
       });
       setAdvice(response.data.advice);

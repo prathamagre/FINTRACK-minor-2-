@@ -9,7 +9,7 @@ function AddExpense({ onAdd }) {
 
     const handleAdd = async () => {
         if (amount && month) {
-          await axios.post("http://localhost:5000/api/add-expense", {
+          await axios.post("https://pragee6946.pythonanywhere.com/api/add-expense", {
             date: month + "-01",
             amount: parseFloat(amount),
           });
