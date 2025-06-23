@@ -3,16 +3,15 @@ import axios from 'axios';
 
 function AddExpense({ onAdd }) {
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(''); // 👈 New state for full date
-
+  const [date, setDate] = useState(''); 
   const handleAdd = async () => {
     if (amount && date) {
-      const selectedMonth = date.slice(0, 7); // Extract month from YYYY-MM-DD
+      const selectedMonth = date.slice(0, 7); 
 
       await axios.post("https://pragee6946.pythonanywhere.com/api/add-expense", {
-        date: date,                 // Full date (e.g., "2025-06-23")
+        date: date,                 
         amount: parseFloat(amount),
-        month: selectedMonth        // e.g., "2025-06"
+        month: selectedMonth        
       });
 
       alert("Expense Added!");
