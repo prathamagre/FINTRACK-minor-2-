@@ -38,7 +38,7 @@ def add_expense():
     date = data.get('date')
     
     conn = get_db_connection()
-    conn.execute('INSERT INTO expenses (date, amount) VALUES (?, ?)', (date, amount))
+    conn.execute('INSERT INTO expenses (date, amount, month) VALUES (?, ?, ?)', (date, amount, month))
     conn.commit()
     conn.close()
     return jsonify({'message': 'Expense added successfully!'})
