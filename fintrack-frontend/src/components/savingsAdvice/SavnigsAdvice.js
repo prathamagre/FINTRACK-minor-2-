@@ -36,7 +36,7 @@ const SavingsAdvice = () => {
       {advice && (
         <div className="advice-message">
           <h4>💬 Personalized Advice:</h4>
-          <pre>{advice}</pre> {/* Render multiline text nicely */}
+          <pre>{advice}</pre> 
         </div>
       )}
     </div>
