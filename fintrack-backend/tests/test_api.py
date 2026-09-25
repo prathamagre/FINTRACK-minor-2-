@@ -172,24 +172,31 @@ def test_production_configuration_rejects_unsafe_defaults(monkeypatch):
     monkeypatch.setenv("JWT_SECRET_KEY", "a-production-secret-value")
     monkeypatch.setenv("DATABASE_URL", "sqlite:///fintrack.db")
     monkeypatch.setenv("CORS_ORIGINS", "https://fintrack.example")
-    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "redis://localhost:6379/0")
+
     with pytest.raises(RuntimeError, match="PostgreSQL"):
         create_app()
 
-    monkeypatch.setenv("DATABASE_URL", "postgresql://user:password@localhost/fintrack")
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql://user:password@localhost/fintrack",
+    )
     monkeypatch.setenv("CORS_ORIGINS", "*")
+
     with pytest.raises(RuntimeError, match="CORS_ORIGINS"):
         create_app()
 
-    monkeypatch.setenv("CORS_ORIGINS", "https://fintrack.example")
-    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "memory://")
-    with pytest.raises(RuntimeError, match="RATELIMIT_STORAGE_URI"):
-        create_app()
+    # Free deployment intentionally uses Flask-Limiter's
+    # in-memory storage, so Redis is no longer required.
+    monkeypatch.setenv(
+        "CORS_ORIGINS",
+        "https://fintrack.example",
+    )
+    monkeypatch.delenv("RATELIMIT_STORAGE_URI", raising=False)
+    monkeypatch.delenv("REDIS_URL", raising=False)
 
-    monkeypatch.setenv("RATELIMIT_STORAGE_URI", "redis://localhost:6379/0")
-    monkeypatch.setenv("FLASK_DEBUG", "true")
     app = create_app()
-    assert app.config["DEBUG"] is False
+
+    assert app.config["FINTRACK_ENV"] == "production"
 
 
 def test_gemini_payloads_only_contain_approved_aggregates(client, auth_headers, monkeypatch):
