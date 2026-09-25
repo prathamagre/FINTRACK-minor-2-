@@ -1,0 +1,79 @@
+services:
+  - type: web
+    name: fintrack-api
+    runtime: python
+    rootDir: fintrack-backend
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    preDeployCommand: flask --app app db upgrade
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    healthCheckPath: /api/health
+    envVars:
+      - key: FINTRACK_ENV
+        value: production
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fintrack-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: fintrack-limits
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: RATE_LIMIT_TRUST_PROXY_HEADERS
+        value: "true"
+
+  - type: keyvalue
+    name: fintrack-limits
+    plan: starter
+    maxmemoryPolicy: noeviction
+    ipAllowList: []
+
+  - type: web
+    name: fintrack-web
+    runtime: static
+    rootDir: fintrack-frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=()"
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+
+databases:
+  - name: fintrack-db
+    plan: basic-256mb
+    databaseName: fintrack
+    user: fintrack

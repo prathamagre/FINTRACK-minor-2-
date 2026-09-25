@@ -1,17 +1,19 @@
-
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../api";
 import "./PredictExpense.css";
 
 const PredictExpense = () => {
-  const [predictedExpense, setPredictedExpense] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [message, setMessage] = useState("");
 
   const fetchPrediction = async () => {
     try {
-      const response = await axios.get('https://pragee6946.pythonanywhere.com/api/predict');
-      setPredictedExpense(response.data.predicted_expense);
+      const response = await api.get('/prediction/next-month');
+      setForecast(response.data.forecast_amount);
+      setMessage(response.data.message || "");
     } catch (error) {
-      console.error('Error fetching prediction:', error);
+      setForecast(null);
+      setMessage(error.response?.data?.error || "Could not load a forecast. Please sign in and try again.");
     }
   };
 
@@ -19,12 +21,8 @@ const PredictExpense = () => {
     <div className="predict-expense">
       <h2>🔮 Predict Next Month's Expense</h2>
       <button onClick={fetchPrediction}>Predict Expense</button>
-
-      {predictedExpense !== null && (
-        <div className="prediction-result">
-          <p>Predicted Expense: ₹{predictedExpense}</p>
-        </div>
-      )}
+      {forecast !== null && <div className="prediction-result"><p>Forecast: ₹{forecast}</p></div>}
+      {message && <p role="status">{message}</p>}
     </div>
   );
 };

@@ -1,25 +1,32 @@
-
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/navbar/Navbar';
-import Home from './views/home/Home';
-import ViewExpenses from './views/viewExpenses/ViewExpenses';
-import About from './views/about/About';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthContext';
+import { ProtectedRoute, PublicOnlyRoute } from './components/auth/RouteGuards';
+import AppShell from './components/layout/AppShell';
+import { LoginPage, SignupPage } from './views/auth/AuthPages';
+import DashboardPage from './views/dashboard/DashboardPage';
+import ExpensesPage from './views/expenses/ExpensesPage';
+import IncomePage from './views/income/IncomePage';
+import GoalsPage from './views/goals/GoalsPage';
+import AdvicePage from './views/advice/AdvicePage';
 import './App.css';
 
-function App() {
-  return (
-    <Router>
-      <Navbar />
-      <div className="container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/view-expenses" element={<ViewExpenses />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+export default function App() {
+  return <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><AuthProvider><Routes>
+    <Route element={<PublicOnlyRoute />}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+    </Route>
+    <Route element={<ProtectedRoute />}><Route element={<AppShell />}>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/expenses" element={<ExpensesPage />} />
+      <Route path="/income" element={<IncomePage />} />
+      <Route path="/goals" element={<GoalsPage />} />
+      <Route path="/advice" element={<AdvicePage />} />
+      <Route path="/view-expenses" element={<Navigate to="/expenses" replace />} />
+      <Route path="/about" element={<Navigate to="/dashboard" replace />} />
+    </Route></Route>
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes></AuthProvider></BrowserRouter>;
 }
-
-export default App;

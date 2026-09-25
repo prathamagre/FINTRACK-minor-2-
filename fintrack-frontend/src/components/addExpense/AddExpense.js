@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 
 function AddExpense({ onAdd }) {
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(''); 
+  const [date, setDate] = useState('');
+  const [category, setCategory] = useState('Uncategorized');
+  const [error, setError] = useState('');
   const handleAdd = async () => {
-    if (amount && date) {
-      const selectedMonth = date.slice(0, 7); 
-
-      await axios.post("https://pragee6946.pythonanywhere.com/api/add-expense", {
-        date: date,                 
-        amount: parseFloat(amount),
-        month: selectedMonth        
-      });
-
-      alert("Expense Added!");
+    setError('');
+    try {
+      await api.post('/expenses', { date, amount: Number(amount), category, description: '' });
       setAmount('');
       setDate('');
       if (onAdd) onAdd();
+    } catch (requestError) {
+      setError(requestError.response?.data?.error || 'Could not add expense. Please sign in and try again.');
     }
   };
 
@@ -38,9 +35,12 @@ function AddExpense({ onAdd }) {
         onChange={(e) => setDate(e.target.value)}
       />
 
-      <button style={{ margin: '0 70px 0 130px' }} onClick={handleAdd}>
+      <input type="text" value={category} maxLength={80} onChange={(e) => setCategory(e.target.value)} placeholder="Category" aria-label="Expense category" />
+
+      <button style={{ margin: '0 70px 0 130px' }} onClick={handleAdd} disabled={!amount || Number(amount) <= 0 || !date || !category.trim()}>
         Add Expense
       </button>
+      {error && <p role="alert">{error}</p>}
 
       <hr style={{ margin: '20px 0' }} />
     </div>

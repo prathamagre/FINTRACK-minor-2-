@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
+import api from "../../api";
 
 import ExpenseList from "../../components/expenseList/ExpenseList";
 import PredictExpense from "../../components/predictExpense/PredictExpense";
@@ -11,26 +11,38 @@ import "./ViewExpenses.css";
 
 const ViewExpenses = () => {
   const [expenses, setExpenses] = useState([]);
+  const [month, setMonth] = useState("");
+  const [error, setError] = useState("");
 
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     try {
-      const res = await axios.get("https://pragee6946.pythonanywhere.com/api/expenses");
+      setError("");
+      const res = await api.get("/expenses", { params: month ? { month } : {} });
       setExpenses(res.data);
     } catch (err) {
-      console.error("Failed to fetch expenses", err);
+      setError(err.response?.data?.error || "Could not load expenses. Please sign in and try again.");
+    }
+  }, [month]);
+
+  const deleteExpense = async (id) => {
+    try {
+      await api.delete(`/expenses/${id}`);
+      await fetchExpenses();
+    } catch (err) {
+      setError(err.response?.data?.error || "Could not delete expense.");
     }
   };
 
   useEffect(() => {
     fetchExpenses();
-  }, []);
+  }, [fetchExpenses]);
 
   return (
     <div className="view-expenses-container">
       <h1>📋 View Your Expenses</h1>
 
       <div className="section">
-        <ExpenseList expenses={expenses} />
+        <ExpenseList expenses={expenses} month={month} onMonthChange={setMonth} onRefresh={fetchExpenses} onDelete={deleteExpense} error={error} />
         <div className="view-expenses-container">
           <div style={{ marginBottom: '30px' }}>
             <AddExpense onAdd={fetchExpenses} />

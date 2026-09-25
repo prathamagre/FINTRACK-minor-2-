@@ -1,44 +1,28 @@
-
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../api";
 import "./SavingsAdvice.css";
 
 const SavingsAdvice = () => {
-  const [income, setIncome] = useState("");
   const [advice, setAdvice] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    if (!income) return;
-
     try {
-      const response = await axios.post("https://pragee6946.pythonanywhere.com/api/savings-advice", {
-        income: parseFloat(income),
-      });
-      setAdvice(response.data.advice);
-    } catch (error) {
-      console.error("Error fetching advice:", error);
+      setError("");
+      const response = await api.post("/ai/savings-advice", {});
+      setAdvice(JSON.stringify(response.data, null, 2));
+    } catch (requestError) {
+      setError(requestError.response?.data?.error || "Could not load savings advice.");
     }
   };
 
   return (
     <div className="savings-advice">
       <h2>💸 Get Savings Advice</h2>
-
-      <input
-        type="number"
-        placeholder="Enter your income"
-        value={income}
-        onChange={(e) => setIncome(e.target.value)}
-      />
-
+      <p>Advice uses your recorded income and expenses.</p>
       <button onClick={handleSubmit}>Get Advice</button>
-
-      {advice && (
-        <div className="advice-message">
-          <h4>💬 Personalized Advice:</h4>
-          <pre>{advice}</pre> 
-        </div>
-      )}
+      {error && <p role="alert">{error}</p>}
+      {advice && <div className="advice-message"><h4>Personalized Advice:</h4><pre>{advice}</pre></div>}
     </div>
   );
 };
